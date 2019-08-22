@@ -1,6 +1,15 @@
 # imgui-plot
 An improved plot widget for Dear ImGui, aimed at displaying audio data
 
+## Screenshots
+Displaying waveform and spectrum:
+
+![Displaying Waveform and Spectrum](https://linuxoids.net/static/waveform_and_spectrum.png)
+
+Custom tooltip:
+
+![Custom Tooltip](https://linuxoids.net/static/custom_tooltip.png)
+
 ## Rationale
 The `PlotLines()` function in Dear ImGui is nice and simple, but it does lack some basic features, such as grids, logarithmic scaling, custom tooltips etc.
 
