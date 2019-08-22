@@ -174,7 +174,16 @@ PlotStatus Plot(const char* label, const PlotConfig& conf) {
             // NB: Draw calls are merged together by the DrawList system. Still, we should render our batch are lower level to save a bit of CPU.
             ImVec2 pos0 = ImLerp(inner_bb.Min, inner_bb.Max, tp0);
             ImVec2 pos1 = ImLerp(inner_bb.Min, inner_bb.Max, tp1);
-                window->DrawList->AddLine(pos0, pos1, v_hovered == v1_idx ? col_hovered : col_base, conf.line_thickness);
+
+            if (v1_idx == v_hovered) {
+                window->DrawList->AddCircleFilled(pos0, 3, col_hovered);
+            }
+
+            window->DrawList->AddLine(
+                pos0,
+                pos1,
+                col_base,
+                conf.line_thickness);
 
             t0 = t1;
             tp0 = tp1;
