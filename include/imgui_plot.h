@@ -6,19 +6,35 @@ namespace ImGui {
 // Use this structure to pass the plot data and settings into the Plot function
 struct PlotConfig {
     struct Values {
+        // if necessary, you can provide x-axis values
         const float *xs = nullptr;
-        const float *ys;
+        // array of y values. If null, use ys_list (below)
+        const float *ys = nullptr;
+        // the number of values in each array
         int count;
+        // at which offset to start plotting.
+        // Warning: count+offset must be <= length of array!
         int offset = 0;
+        // Plot color. If 0, use ImGuiCol_PlotLines.
         ImU32 color = 0;
+
+        // in case you need to draw multiple plots at once, use this instead of ys
+        const float **ys_list = nullptr;
+        // the number of plots to draw
+        int ys_count = 0;
+        // colors for each plot
+        const ImU32* colors = nullptr;
     } values;
     struct Scale {
-        float min = FLT_MAX;
-        float max = FLT_MAX;
+        // Minimum plot value
+        float min;
+        // Maximum plot value
+        float max;
         enum Type {
             Linear,
             Log10,
         };
+        // Plot scaling type
         Type type = Linear;
     } scale;
     struct Tooltip {

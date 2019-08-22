@@ -43,6 +43,15 @@ PlotStatus Plot(const char* label, const PlotConfig& conf) {
     if (window->SkipItems)
         return status;
 
+    const float* const* ys_list = conf.values.ys_list;
+    int ys_count = conf.values.ys_count;
+    const ImU32* colors = conf.values.colors;
+    if (conf.values.ys != nullptr) { // draw only a single plot
+        ys_list = &conf.values.ys;
+        ys_count = 1;
+        colors = &conf.values.color;
+    }
+
     ImGuiContext& g = *GImGui;
     const ImGuiStyle& style = g.Style;
     const ImGuiID id = window->GetID(label);
@@ -88,7 +97,7 @@ PlotStatus Plot(const char* label, const PlotConfig& conf) {
             const int v_idx = cursor_to_idx(g.IO.MousePos, inner_bb, conf, x_min, x_max);
             const size_t data_idx = conf.values.offset + (v_idx % conf.values.count);
             const float x0 = conf.values.xs ? conf.values.xs[data_idx] : v_idx;
-            const float y0 = conf.values.ys[data_idx];
+            const float y0 = ys_list[0][data_idx]; // TODO: tooltip is only shown for the first y-value!
             SetTooltip(conf.tooltip.format, x0, y0);
             v_hovered = v_idx;
         }
@@ -147,46 +156,46 @@ PlotStatus Plot(const char* label, const PlotConfig& conf) {
             }
         }
 
-        float v0 = conf.values.ys[conf.values.offset];
-        float t0 = 0.0f;
-        // Point in the normalized space of our target rectangle
-        ImVec2 tp0 = ImVec2(t0, 1.0f - ImSaturate((v0 - conf.scale.min) * inv_scale));
-        // Where does the zero line stand
-        float histogram_zero_line_t = (conf.scale.min * conf.scale.max < 0.0f) ?
-                                        (-conf.scale.min * inv_scale) :
-                                        (conf.scale.min < 0.0f ? 0.0f : 1.0f);
-
-        const ImU32 col_base = conf.values.color ?
-                               conf.values.color :
-                               GetColorU32(ImGuiCol_PlotLines);
         const ImU32 col_hovered = GetColorU32(ImGuiCol_PlotLinesHovered);
+        ImU32 col_base = GetColorU32(ImGuiCol_PlotLines);
 
-        for (int n = 0; n < res_w; n++)
-        {
-            const float t1 = t0 + t_step;
-            const int v1_idx = (int)(t0 * item_count + 0.5f);
-            IM_ASSERT(v1_idx >= 0 && v1_idx < conf.values.count);
-            const float v1 = conf.values.ys[conf.values.offset + (v1_idx + 1) % conf.values.count];
-            const ImVec2 tp1 = ImVec2(
-                rescale(t1, x_min, x_max, conf.scale.type),
-                1.0f - ImSaturate((v1 - conf.scale.min) * inv_scale));
+        for (int i = 0; i < ys_count; ++i) {
+            if (colors) {
+                if (colors[i]) col_base = colors[i];
+                else col_base = GetColorU32(ImGuiCol_PlotLines);
+            }
+            float v0 = ys_list[i][conf.values.offset];
+            float t0 = 0.0f;
+            // Point in the normalized space of our target rectangle
+            ImVec2 tp0 = ImVec2(t0, 1.0f - ImSaturate((v0 - conf.scale.min) * inv_scale));
+
+            for (int n = 0; n < res_w; n++)
+            {
+                const float t1 = t0 + t_step;
+                const int v1_idx = (int)(t0 * item_count + 0.5f);
+                IM_ASSERT(v1_idx >= 0 && v1_idx < conf.values.count);
+                const float v1 = ys_list[i][conf.values.offset + (v1_idx + 1) % conf.values.count];
+                const ImVec2 tp1 = ImVec2(
+                    rescale(t1, x_min, x_max, conf.scale.type),
+                    1.0f - ImSaturate((v1 - conf.scale.min) * inv_scale));
 
             // NB: Draw calls are merged together by the DrawList system. Still, we should render our batch are lower level to save a bit of CPU.
-            ImVec2 pos0 = ImLerp(inner_bb.Min, inner_bb.Max, tp0);
-            ImVec2 pos1 = ImLerp(inner_bb.Min, inner_bb.Max, tp1);
+                ImVec2 pos0 = ImLerp(inner_bb.Min, inner_bb.Max, tp0);
+                ImVec2 pos1 = ImLerp(inner_bb.Min, inner_bb.Max, tp1);
 
-            if (v1_idx == v_hovered) {
-                window->DrawList->AddCircleFilled(pos0, 3, col_hovered);
+                if (v1_idx == v_hovered) {
+                    window->DrawList->AddCircleFilled(pos0, 3, col_hovered);
+                }
+
+                window->DrawList->AddLine(
+                    pos0,
+                    pos1,
+                    col_base,
+                    conf.line_thickness);
+
+                t0 = t1;
+                tp0 = tp1;
             }
-
-            window->DrawList->AddLine(
-                pos0,
-                pos1,
-                col_base,
-                conf.line_thickness);
-
-            t0 = t1;
-            tp0 = tp1;
         }
 
         if (conf.v_lines.show) {
