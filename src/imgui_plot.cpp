@@ -189,9 +189,9 @@ PlotStatus Plot(const char* label, const PlotConfig& conf) {
             tp0 = tp1;
         }
 
-        if (conf.lines.show) {
-            for (size_t i = 0; i < conf.lines.count; ++i) {
-                const size_t idx = conf.lines.indices[i];
+        if (conf.v_lines.show) {
+            for (size_t i = 0; i < conf.v_lines.count; ++i) {
+                const size_t idx = conf.v_lines.indices[i];
                 const float t1 = rescale(idx * t_step, x_min, x_max, conf.scale.type);
                 ImVec2 pos0 = ImLerp(inner_bb.Min, inner_bb.Max, ImVec2(t1, 0.f));
                 ImVec2 pos1 = ImLerp(inner_bb.Min, inner_bb.Max, ImVec2(t1, 1.f));

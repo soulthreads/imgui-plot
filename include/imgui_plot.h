@@ -3,6 +3,7 @@
 #include <imgui.h>
 
 namespace ImGui {
+// Use this structure to pass the plot data and settings into the Plot function
 struct PlotConfig {
     struct Values {
         const float *xs = nullptr;
@@ -35,11 +36,11 @@ struct PlotConfig {
         uint32_t* length = nullptr;
         uint32_t(*sanitize_fn)(uint32_t);
     } selection;
-    struct Lines {
+    struct VerticalLines {
         bool show = false;
         const size_t* indices = nullptr;
         size_t count = 0;
-    } lines;
+    } v_lines;
     ImVec2 frame_size = ImVec2(0.f, 0.f);
     float line_thickness = 1.f;
     bool skip_small_lines = true;
