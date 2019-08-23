@@ -34,7 +34,7 @@ struct PlotConfig {
             Linear,
             Log10,
         };
-        // Plot scaling type
+        // How to scale the x-axis
         Type type = Linear;
     } scale;
     struct Tooltip {
@@ -43,18 +43,21 @@ struct PlotConfig {
     } tooltip;
     struct Grid {
         bool show = false;
-        float size = 100;
-        int subticks = 10;
+        float size = 100; // at which intervals to draw the grid
+        int subticks = 10; // how many subticks in each tick
     } grid_x, grid_y;
     struct Selection {
         bool show = false;
         uint32_t* start = nullptr;
         uint32_t* length = nullptr;
+        // "Sanitize" function. Give it selection length, and it will return
+        // the "allowed" length. Useful for FFT, where selection must be
+        // of power of two
         uint32_t(*sanitize_fn)(uint32_t);
     } selection;
     struct VerticalLines {
         bool show = false;
-        const size_t* indices = nullptr;
+        const size_t* indices = nullptr; // at which indices to draw the lines
         size_t count = 0;
     } v_lines;
     ImVec2 frame_size = ImVec2(0.f, 0.f);
