@@ -53,7 +53,7 @@ struct PlotConfig {
         // "Sanitize" function. Give it selection length, and it will return
         // the "allowed" length. Useful for FFT, where selection must be
         // of power of two
-        uint32_t(*sanitize_fn)(uint32_t);
+        uint32_t(*sanitize_fn)(uint32_t) = nullptr;
     } selection;
     struct VerticalLines {
         bool show = false;
