@@ -1,5 +1,5 @@
 # imgui-plot
-An improved plot widget for Dear ImGui, aimed at displaying audio data
+An improved plot widget for [Dear ImGui](https://github.com/ocornut/imgui/), aimed at displaying audio data
 
 ## TOC
 1. [Screenshots](#screenshots)
