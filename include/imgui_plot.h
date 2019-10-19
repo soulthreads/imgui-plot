@@ -37,10 +37,6 @@ struct PlotConfig {
         // How to scale the x-axis
         Type type = Linear;
     } scale;
-    struct Tooltip {
-        bool show = false;
-        const char* format = "%g: %8.4g";
-    } tooltip;
     struct Grid {
         bool show = false;
         float size = 100; // at which intervals to draw the grid
@@ -66,9 +62,10 @@ struct PlotConfig {
     const char* overlay_text = nullptr;
 };
 
-enum class PlotStatus {
-    nothing,
-    selection_updated,
+struct PlotStatus {
+    bool selection_updated = false;
+    bool hovered = false;
+    int hovered_index = -1;
 };
 
 IMGUI_API PlotStatus Plot(const char* label, const PlotConfig& conf);

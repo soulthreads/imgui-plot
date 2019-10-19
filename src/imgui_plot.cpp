@@ -37,7 +37,7 @@ static int cursor_to_idx(const ImVec2& pos, const ImRect& bb, const PlotConfig& 
 }
 
 PlotStatus Plot(const char* label, const PlotConfig& conf) {
-    PlotStatus status = PlotStatus::nothing;
+    PlotStatus status;
 
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -91,15 +91,14 @@ PlotStatus Plot(const char* label, const PlotConfig& conf) {
             x_max = conf.values.xs[size_t(x_max)];
         }
 
-        // Tooltip on hover
+        // Give the user opportunity to show tooltip on hover
         int v_hovered = -1;
-        if (conf.tooltip.show && hovered && inner_bb.Contains(g.IO.MousePos)) {
+        if (hovered && inner_bb.Contains(g.IO.MousePos)) {
             const int v_idx = cursor_to_idx(g.IO.MousePos, inner_bb, conf, x_min, x_max);
             const size_t data_idx = conf.values.offset + (v_idx % conf.values.count);
-            const float x0 = conf.values.xs ? conf.values.xs[data_idx] : v_idx;
-            const float y0 = ys_list[0][data_idx]; // TODO: tooltip is only shown for the first y-value!
-            SetTooltip(conf.tooltip.format, x0, y0);
             v_hovered = v_idx;
+            status.hovered = true;
+            status.hovered_index = data_idx;
         }
 
         const float t_step = 1.0f / (float)res_w;
@@ -222,7 +221,7 @@ PlotStatus Plot(const char* label, const PlotConfig& conf) {
                     if (end < conf.values.offset + conf.values.count) {
                         *conf.selection.start = start;
                         *conf.selection.length = end - start;
-                        status = PlotStatus::selection_updated;
+                        status.selection_updated = true;
                     }
                 }
             }
@@ -237,7 +236,7 @@ PlotStatus Plot(const char* label, const PlotConfig& conf) {
                             end = conf.selection.sanitize_fn(end - start) + start;
                         if (end < conf.values.offset + conf.values.count) {
                             *conf.selection.length = end - start;
-                            status = PlotStatus::selection_updated;
+                            status.selection_updated = true;
                         }
                     }
                 } else {

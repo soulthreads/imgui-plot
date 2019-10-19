@@ -34,14 +34,17 @@ conf.values.ys = y_data;
 conf.values.count = data_count;
 conf.scale.min = -1;
 conf.scale.max = 1;
-conf.tooltip.show = true;
-conf.tooltip.format = "x=%.2f, y=%.2f";
 conf.grid_x.show = true;
 conf.grid_y.show = true;
 conf.frame_size = ImVec2(400, 400);
 conf.line_thickness = 2.f;
 
-ImGui::Plot("plot", conf);
+auto status = ImGui::Plot("plot", conf);
+if (status.hovered) {
+    ImGui::SetTooltip("x=%.2f, y=%.2f",
+        x_data[status.hovered_index],
+        y_data[status.hovered_index]);
+}
 ```
 
 Selection example (gif above):
@@ -80,7 +83,6 @@ void draw_multi_plot() {
     conf.values.colors = colors;
     conf.scale.min = -1;
     conf.scale.max = 1;
-    conf.tooltip.show = true;
     conf.grid_x.show = true;
     conf.grid_x.size = 128;
     conf.grid_x.subticks = 4;
@@ -91,7 +93,14 @@ void draw_multi_plot() {
     conf.selection.start = &selection_start;
     conf.selection.length = &selection_length;
     conf.frame_size = ImVec2(buf_size, 200);
-    ImGui::Plot("plot1", conf);
+    auto status = ImGui::Plot("plot1", conf);
+    if (status.hovered) {
+        ImGui::SetTooltip("x=%.2fms\ny1=%.4f\ny2=%.4f\ny3=%.4f",
+            x_data[staus.hovered_index] * 1000,
+            y_data1[status.hovered_index],
+            y_data2[status.hovered_index],
+            y_data3[status.hovered_index]);
+    }
 
     // Draw second plot with the selection
     // reset previous values
@@ -102,7 +111,12 @@ void draw_multi_plot() {
     conf.values.offset = selection_start;
     conf.values.count = selection_length;
     conf.line_thickness = 2.f;
-    ImGui::Plot("plot2", conf);
+    status = ImGui::Plot("plot2", conf);
+    if (status.hovered) {
+        ImGui::SetTooltip("x=%.2fms, y3=%.4f",
+            x_data[status.hovered_index] * 1000,
+            y_data3[status.hovered_index]);
+    }
 
     ImGui::End();
 }
