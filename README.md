@@ -117,19 +117,18 @@ Alternatively, you can use [FetchContent](https://cmake.org/cmake/help/latest/mo
 
 ```cmake
 include(FetchContent)
+# Optional: Set IMGUI_INCLUDE_DIR to the path of imgui sources, if different from the default. 
+# set(IMGUI_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/imgui)
 FetchContent_Declare(
     imgui_plot
     GIT_REPOSITORY https://github.com/soulthreads/imgui-plot.git
     GIT_TAG v0.1.0
     EXCLUDE_FROM_ALL
 )
-FetchContent_GetProperties(imgui_plot)
-if(NOT imgui_plot_POPULATED)
-    FetchContent_Populate(imgui_plot)
-    add_subdirectory(${imgui_plot_SOURCE_DIR} ${imgui_plot_BINARY_DIR})
-endif()
+FetchContent_MakeAvailable(imgui_plot)
+# ...
+target_link_libraries(${PROJECT_NAME} PRIVATE imgui_plot)
 ```
-and then just link `imgui_plot` into your application. If you have ImGui located not in `{repo}/imgui` you can set `IMGUI_INCLUDE_DIR` variable to the according value.
 
 ## FAQ
 ### How do I do _x_?
