@@ -63,7 +63,7 @@ PlotStatus Plot(const char* label, const PlotConfig& conf) {
     ItemSize(total_bb, style.FramePadding.y);
     if (!ItemAdd(total_bb, 0, &frame_bb))
         return status;
-    const bool hovered = ItemHoverable(frame_bb, id);
+    const bool hovered = ItemHoverable(frame_bb, id, ImGuiItemFlags_None);
 
     RenderFrame(
         frame_bb.Min,
